@@ -14,10 +14,8 @@ module Homeland
             plugin.root_path      = "/jobs"
           end
 
-          User.send :include, Homeland::Press::UserMixin
-
           app.routes.prepend do
-            mount Homeland::Jobs::Engine => '/'
+            mount Homeland::Jobs::Engine, at: '/'
           end
         end
       end
