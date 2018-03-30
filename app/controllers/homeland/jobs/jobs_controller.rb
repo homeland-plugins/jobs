@@ -8,6 +8,7 @@ module Homeland::Jobs
       @topics = Topic.where(node_id: @node.id)
       @topics = @topics.where.not(id: suggest_topic_ids) if suggest_topic_ids.count > 0
       @topics = @topics.last_actived.includes(:user).page(params[:page])
+      @topics = @topics.where("title LIKE ?", "%[#{params[:location]}]%") if params[:location]
       @page_title = '招聘'
       render '/topics/index' if stale?(etag: [@node, @suggest_topics, @topics], template: '/topics/index')
     end
