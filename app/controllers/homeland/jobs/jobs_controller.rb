@@ -6,6 +6,10 @@ module Homeland::Jobs
       @suggest_topics = Topic.where(node_id: @node.id).suggest.limit(3)
       suggest_topic_ids = @suggest_topics.map(&:id)
       @topics = Topic.where(node_id: @node.id)
+
+      # New ban filter by :grade column
+      @topics = @topics.without_ban if @topics.respond_to?(:without_ban)
+
       @topics = @topics.where.not(id: suggest_topic_ids) if suggest_topic_ids.count > 0
       @topics = @topics.last_actived.includes(:user).page(params[:page])
       @topics = @topics.where("title LIKE ?", "%[#{params[:location]}]%") if params[:location]
