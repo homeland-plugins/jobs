@@ -3,7 +3,7 @@ module Homeland::Jobs
     before_action :set_node
 
     def index
-      @suggest_topics = Topic.where(node_id: @node.id).suggest.limit(3)
+      @suggest_topics = Topic.where(node_id: @node.id).includes(:user, :node, :last_reply_user).suggest.limit(3)
       suggest_topic_ids = @suggest_topics.map(&:id)
       @topics = Topic.where(node_id: @node.id)
 
@@ -11,7 +11,7 @@ module Homeland::Jobs
       @topics = @topics.without_ban if @topics.respond_to?(:without_ban)
 
       @topics = @topics.where.not(id: suggest_topic_ids) if suggest_topic_ids.count > 0
-      @topics = @topics.last_actived.includes(:user).page(params[:page])
+      @topics = @topics.last_actived.includes(:user, :node, :last_reply_user).page(params[:page])
       @topics = @topics.where("title ilike ?", "%[#{params[:location]}]%") if params[:location]
       @page_title = '招聘'
     end
